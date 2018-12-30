@@ -1,6 +1,23 @@
-#!groovy
+pipeline {  
+    environment {
+         imagename = "trade-history"
+     }
 
-@Library('MicroserviceBuilder') _
-microserviceBuilderPipeline {
-  image = 'tradehistory'
+    agent any
+    stages {
+       stage('Build') { 
+          steps {
+              sh 'mvn clean package' 
+          }
+       }  
+       stage('Deliver') {
+            steps {
+                script {
+                    docker.build imagename
+                }
+                sh '/push2dockerhub.sh $imagename'
+            }
+       }
+    }
+
 }
